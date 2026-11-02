@@ -112,7 +112,7 @@
 }
 
 .footer-views-label {
-  color: #858b82;
+  color: #808080;
   font: 9px var(--mono);
   letter-spacing: .14em;
 }
@@ -124,7 +124,7 @@
   margin: 0 !important;
   border: 0 !important;
   background: transparent !important;
-  color: var(--green) !important;
+  color: #26ff00 !important;
   font: 20px var(--mono) !important;
   line-height: 1 !important;
 }
