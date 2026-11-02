@@ -175,17 +175,28 @@
   <script src="config.js"></script>
   <script src="projects.js"></script>
   <script src="https://web3forms.com/client/script.js" async defer></script>
-  <script src="script.js"></script>
-  <script>
-  function showPortfolioViews(response) {
+  <script src="script.js"></script><script>
+  window.showPortfolioViews = function (response) {
     const counter = document.getElementById("portfolioViewsCount");
 
-    if (counter && response && typeof response.value !== "undefined") {
-      counter.textContent = response.value;
+    if (!counter || !response || response.value == null) {
+      console.error("Portfolio views: Invalid API response.", response);
+      return;
     }
-  }
-</script>
 
-<script async src="https://counterapi.com/api/shivangsagar.github.io/view/portfolio?callback=showPortfolioViews&amp;startNumber=3"></script>
+    // Display the actual number without leading zeroes.
+    counter.textContent = String(response.value);
+  };
+
+  const viewsScript = document.createElement("script");
+  viewsScript.src = "https://counterapi.com/api/shivangsagar.github.io/view/portfolio?callback=showPortfolioViews&startNumber=3";
+  viewsScript.async = true;
+
+  viewsScript.onerror = function () {
+    console.error("Portfolio views: CounterAPI failed to load.");
+  };
+
+  document.head.appendChild(viewsScript);
+</script>
 </body>
 </html>
