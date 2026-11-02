@@ -175,28 +175,42 @@
   <script src="config.js"></script>
   <script src="projects.js"></script>
   <script src="https://web3forms.com/client/script.js" async defer></script>
-  <script src="script.js"></script><script>
-  window.showPortfolioViews = function (response) {
+  <script src="script.js"></script>
+  <script>
+  (function () {
     const counter = document.getElementById("portfolioViewsCount");
+    if (!counter) return;
 
-    if (!counter || !response || response.value == null) {
-      console.error("Portfolio views: Invalid API response.", response);
-      return;
-    }
+    const request = new XMLHttpRequest();
+    request.open(
+      "GET",
+      "https://counterapi.com/api/shivangsagar.github.io/view/portfolio?startNumber=3",
+      true
+    );
+    request.responseType = "json";
 
-    // Display the actual number without leading zeroes.
-    counter.textContent = String(response.value);
-  };
+    request.onload = function () {
+      const response = request.response;
 
-  const viewsScript = document.createElement("script");
-  viewsScript.src = "https://counterapi.com/api/shivangsagar.github.io/view/portfolio?callback=showPortfolioViews&startNumber=3";
-  viewsScript.async = true;
+      if (
+        request.status >= 200 &&
+        request.status < 300 &&
+        response &&
+        response.value != null
+      ) {
+        // Display the exact count without leading zeroes or abbreviation.
+        counter.textContent = String(response.value);
+      } else {
+        console.error("Portfolio views: Invalid CounterAPI response.", response);
+      }
+    };
 
-  viewsScript.onerror = function () {
-    console.error("Portfolio views: CounterAPI failed to load.");
-  };
+    request.onerror = function () {
+      console.error("Portfolio views: CounterAPI request failed.");
+    };
 
-  document.head.appendChild(viewsScript);
+    request.send();
+  })();
 </script>
 </body>
 </html>
