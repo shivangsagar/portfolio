@@ -181,35 +181,30 @@
     const counter = document.getElementById("portfolioViewsCount");
     if (!counter) return;
 
-    const request = new XMLHttpRequest();
-    request.open(
-      "GET",
-      "https://counterapi.com/api/shivangsagar.github.io/view/portfolio?startNumber=3",
-      true
-    );
-    request.responseType = "json";
+    // Abacus counter: increment once for each portfolio page load.
+    // The +3 preserves the starting offset used by the previous counter.
+    const endpoint =
+      "https://abacus.jasoncameron.dev/hit/shivangsagar-portfolio/portfolio";
 
-    request.onload = function () {
-      const response = request.response;
+    fetch(endpoint, { method: "GET", cache: "no-store" })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Counter request failed with status " + response.status);
+        }
+        return response.json();
+      })
+      .then(function (data) {
+        const value = Number(data.value);
+        if (!Number.isFinite(value)) {
+          throw new Error("Counter API returned an invalid value.");
+        }
 
-      if (
-        request.status >= 200 &&
-        request.status < 300 &&
-        response &&
-        response.value != null
-      ) {
-        // Display the exact count without leading zeroes or abbreviation.
-        counter.textContent = String(response.value);
-      } else {
-        console.error("Portfolio views: Invalid CounterAPI response.", response);
-      }
-    };
-
-    request.onerror = function () {
-      console.error("Portfolio views: CounterAPI request failed.");
-    };
-
-    request.send();
+        // String() keeps the number unpadded and unabridged (e.g. 1, 60, 980).
+        counter.textContent = String(value + 3);
+      })
+      .catch(function (error) {
+        console.error("Portfolio views: counter could not be loaded.", error);
+      });
   })();
 </script>
 </body>
