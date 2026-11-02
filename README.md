@@ -82,6 +82,7 @@ portfolio/
 ├── assets/
 │   ├── favicon.svg
 │   └── Shivang-Sagar-Resume.pdf
+│   └── social-preview.png
 │
 └── projects/
     ├── autocad/
