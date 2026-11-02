@@ -98,3 +98,12 @@
   .resume-original-entry ul { padding-left: 20px; }
   .resume-original-header p { line-height: 1.9; }
 }
+
+
+/* Portfolio views counter — isolated footer addition */
+.footer-views{display:flex;align-items:center;justify-content:center;gap:16px;padding:22px 0 26px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.footer-views-label{color:#858b82;font:9px var(--mono);letter-spacing:.14em}
+.footer-views-counter{display:inline-flex;align-items:center;transition:opacity .2s}
+.footer-views-counter:hover{opacity:.8}
+.footer-views-counter img{display:block;width:auto;height:23px}
+@media(max-width:680px){.footer-views{gap:12px;padding:19px 0 22px}.footer-views-counter img{height:22px}}
