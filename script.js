@@ -40,7 +40,7 @@ function escapeHTML(value = "") {
 let showAllProjects = false;
 
 function playingCard(number) {
-  // Project 01 starts at 2♣. Each new project advances one card through a 52-card deck.
+  // Stable deck mapping: 01 = 2♣, 02 = 3♣ ... 13 = A♣, then ♦, ♠, ♥.
   const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
   const suits = [
     { symbol: "♣", name: "clubs" },
@@ -52,11 +52,17 @@ function playingCard(number) {
   const deckIndex = (projectNumber - 1) % 52;
   const rank = ranks[deckIndex % 13];
   const suit = suits[Math.floor(deckIndex / 13)];
-  return `<div class="playing-card suit-${suit.name}" aria-label="${rank} of ${suit.name}">
+  return `<div class="playing-card suit-${suit.name}" role="img" aria-label="${rank} of ${suit.name}">
     <span class="card-corner card-top">${rank}<b>${suit.symbol}</b></span>
     <span class="card-center">${suit.symbol}</span>
     <span class="card-corner card-bottom">${rank}<b>${suit.symbol}</b></span>
   </div>`;
+}
+
+function bindCadPreviewButtons(grid) {
+  $$(".preview-cad", grid).forEach(button => {
+    button.addEventListener("click", () => openCad(button.dataset.file, button.dataset.title));
+  });
 }
 
 function renderProjects(category) {
@@ -69,7 +75,6 @@ function renderProjects(category) {
     staad: ["STRUCTURAL ANALYSIS / DESIGN", "STAAD.Pro projects"]
   };
 
-  // Native project numbers are chronological: newest project first.
   if (category !== "github") {
     data.sort((a, b) => Number.parseInt(b.number || "0", 10) - Number.parseInt(a.number || "0", 10));
   }
@@ -80,9 +85,7 @@ function renderProjects(category) {
 
   const showAllButton = $("#showAllProjects");
   showAllProjects = false;
-  const visibleData = data.slice(0, 3);
   showAllButton.hidden = data.length <= 3;
-  showAllButton.textContent = `Show all ${data.length} projects ↓`;
 
   if (!data.length) {
     const label = category === "revit" ? "Revit" : "STAAD.Pro";
@@ -90,7 +93,7 @@ function renderProjects(category) {
     return;
   }
 
-  const renderCards = (items) => {
+  const renderCards = items => {
     if (category === "github") {
       return items.map((item, i) => `
         <article class="project-card github-card">
@@ -113,18 +116,18 @@ function renderProjects(category) {
       </article>`).join("");
   };
 
-  grid.innerHTML = renderCards(visibleData);
-  showAllButton.onclick = () => {
-    showAllProjects = !showAllProjects;
+  const renderVisible = () => {
     grid.innerHTML = renderCards(showAllProjects ? data : data.slice(0, 3));
-    showAllButton.textContent = showAllProjects ? "Show less ↑" : `Show all ${data.length} projects ↓`;
     bindCadPreviewButtons(grid);
   };
-  bindCadPreviewButtons(grid);
-}
 
-function bindCadPreviewButtons(grid) {
-  $$(".preview-cad", grid).forEach(button => button.addEventListener("click", () => openCad(button.dataset.file, button.dataset.title)));
+  renderVisible();
+  showAllButton.textContent = `Show all ${data.length} projects ↓`;
+  showAllButton.onclick = () => {
+    showAllProjects = !showAllProjects;
+    renderVisible();
+    showAllButton.textContent = showAllProjects ? "Show less ↑" : `Show all ${data.length} projects ↓`;
+  };
 }
 function openCad(file, title) {
   const modal = $("#cadModal");
@@ -158,17 +161,17 @@ $$(".project-tab").forEach(tab => tab.addEventListener("click", () => {
 }));
 renderProjects("autocad");
 
-// Contact form: Web3Forms handles delivery; the recipient address is not in this source.
+// Contact form: Web3Forms delivery with its zero-configuration hCaptcha integration.
 const contactForm = $("#contactForm");
 const emailInput = contactForm.querySelector('input[name="email"]');
 const accessKeyInput = contactForm.querySelector('input[name="access_key"]');
-if (accessKeyInput && window.PORTFOLIO_CONFIG?.web3formsAccessKey) {
-  accessKeyInput.value = window.PORTFOLIO_CONFIG.web3formsAccessKey;
-}
+const configuredAccessKey = window.PORTFOLIO_CONFIG?.web3formsAccessKey || "";
+
+if (accessKeyInput) accessKeyInput.value = configuredAccessKey;
 
 function validVisitorEmail(value) {
   const email = String(value || "").trim();
-  if (email.length > 254 || /\s/.test(email) || email.includes("+")) return false;
+  if (!email || email.length > 254 || /\s/.test(email) || email.includes("+")) return false;
   const parts = email.split("@");
   if (parts.length !== 2) return false;
   const [local, domain] = parts;
@@ -177,19 +180,24 @@ function validVisitorEmail(value) {
   if (!domain || domain.length > 253 || !domain.includes(".")) return false;
   const labels = domain.toLowerCase().split(".");
   if (labels.some(label => !label || label.length > 63 || label.startsWith("-") || label.endsWith("-") || !/^[a-z0-9-]+$/.test(label))) return false;
-  const tld = labels[labels.length - 1];
-  if (!/^[a-z]{2,}$/i.test(tld)) return false;
-  const suspiciousLocal = /^(test|testing|fake|spam|asdf|qwerty|no.?reply|example)([0-9._-]*|)$/i;
-  if (suspiciousLocal.test(local)) return false;
-  const disposableDomains = new Set(["mailinator.com", "10minutemail.com", "guerrillamail.com", "tempmail.com", "yopmail.com", "throwawaymail.com"]);
+  if (!/^[a-z]{2,}$/i.test(labels[labels.length - 1])) return false;
+  const localLooksFake = /^(test|testing|fake|spam|asdf|qwerty|no.?reply|example)([0-9._-]*|)$/i;
+  if (localLooksFake.test(local)) return false;
+  const disposableDomains = new Set([
+    "mailinator.com", "10minutemail.com", "guerrillamail.com", "tempmail.com",
+    "yopmail.com", "throwawaymail.com", "temp-mail.org", "getnada.com",
+    "dispostable.com", "maildrop.cc", "sharklasers.com", "guerrillamail.net"
+  ]);
   if (disposableDomains.has(domain.toLowerCase())) return false;
   return true;
 }
 
 emailInput.addEventListener("input", () => {
-  emailInput.setCustomValidity(emailInput.value && !validVisitorEmail(emailInput.value)
-    ? "Enter a valid email address. Plus-addressing and temporary email services are not accepted."
-    : "");
+  emailInput.setCustomValidity(
+    emailInput.value && !validVisitorEmail(emailInput.value)
+      ? "Enter a valid email address. Plus-addressing and temporary email services are not accepted."
+      : ""
+  );
 });
 
 contactForm.addEventListener("submit", async event => {
@@ -197,8 +205,8 @@ contactForm.addEventListener("submit", async event => {
   const status = $("#formStatus");
   const submitButton = contactForm.querySelector('button[type="submit"]');
   const data = new FormData(contactForm);
-  if (data.get("botcheck")) return;
 
+  if (data.get("botcheck")) return;
   if (!validVisitorEmail(emailInput.value)) {
     emailInput.setCustomValidity("Enter a valid email address. Plus-addressing and temporary email services are not accepted.");
     emailInput.reportValidity();
@@ -206,20 +214,18 @@ contactForm.addEventListener("submit", async event => {
   }
   emailInput.setCustomValidity("");
 
-  // Web3Forms injects this response field when its hCaptcha widget is loaded.
   const captchaResponse = contactForm.querySelector('textarea[name="h-captcha-response"]')?.value;
   if (!captchaResponse) {
     status.textContent = "PLEASE COMPLETE THE CAPTCHA";
     contactForm.querySelector(".h-captcha")?.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
-
-  const accessKey = window.PORTFOLIO_CONFIG?.web3formsAccessKey || accessKeyInput?.value;
-  if (!accessKey) {
+  if (!configuredAccessKey) {
     status.textContent = "FORM NOT CONFIGURED";
     return;
   }
-  data.set("access_key", accessKey);
+
+  data.set("access_key", configuredAccessKey);
   data.set("subject", `Portfolio enquiry — ${String(data.get("name") || "Visitor").trim()}`);
   data.set("from_name", "Portfolio Contact Form");
   data.set("replyto", String(data.get("email") || "").trim());
@@ -234,9 +240,12 @@ contactForm.addEventListener("submit", async event => {
     });
     const result = await response.json();
     if (!response.ok || !result.success) throw new Error(result.message || "Submission failed");
+
     status.textContent = "MESSAGE SENT ✓";
     contactForm.reset();
+    accessKeyInput.value = configuredAccessKey;
     emailInput.setCustomValidity("");
+    if (window.hcaptcha && typeof window.hcaptcha.reset === "function") window.hcaptcha.reset();
   } catch (error) {
     status.textContent = "COULDN'T SEND — TRY AGAIN";
   } finally {

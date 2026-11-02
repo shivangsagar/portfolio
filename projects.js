@@ -4,8 +4,7 @@
   AutoCAD:
   - Put .dwg/.dxf files in projects/autocad/
   - Add a project object below. Keep file paths relative to the website root.
-  - Keep number as a two-digit chronological ID (01 = oldest). The site displays
-    projects newest-first and maps IDs to a 52-card deck: 01 = 2 of clubs.
+  - Use chronological IDs (01 = oldest); cards map from 2 of clubs upward.
   - For MLightCAD preview, set viewer: true. The drawing must be publicly hosted.
   - If a drawing cannot be previewed in MLightCAD, set viewer: false; download still works.
 

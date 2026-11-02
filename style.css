@@ -19,11 +19,13 @@
 
 
 /* Project catalogue refinements */
-.project-show-all-wrap{display:flex;justify-content:center;margin-top:24px}
+.project-show-all-wrap{display:flex;justify-content:flex-start;margin-top:0}
 .project-show-all[hidden]{display:none}
 .project-show-all{min-width:165px;padding:11px 18px;background:transparent}
 .project-show-all:hover{background:var(--green);color:var(--black)}
-.playing-card{position:relative;z-index:1;width:91px;height:126px;border:1px solid rgba(114,255,0,.8);border-radius:7px;background:linear-gradient(145deg,#f3f5ef,#dfe5d8);color:#10150d;box-shadow:0 8px 24px rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;transform:rotate(-4deg);transition:transform .25s,box-shadow .25s}
+.project-card .project-visual{isolation:isolate}
+.project-card .project-visual .blueprint-grid{z-index:0}
+.playing-card{position:relative;z-index:1;width:91px;height:126px;border:1px solid rgba(114,255,0,.85);border-radius:7px;background:linear-gradient(145deg,#f3f5ef,#dfe5d8);color:#10150d;box-shadow:0 8px 24px rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;transform:rotate(-4deg);transition:transform .25s,box-shadow .25s}
 .project-card:hover .playing-card{transform:rotate(0) translateY(-3px);box-shadow:0 12px 30px rgba(114,255,0,.13)}
 .card-corner{position:absolute;display:flex;flex-direction:column;align-items:center;font:700 15px/1 var(--sans);gap:2px}
 .card-corner b{font-size:13px;line-height:1}
@@ -31,22 +33,18 @@
 .card-bottom{right:8px;bottom:8px;transform:rotate(180deg)}
 .card-center{font-size:53px;line-height:1;color:#15200e}
 .suit-diamonds .card-center,.suit-hearts .card-center{color:#4f8d20}
-.project-visual .playing-card~i{z-index:2}
-.project-card .project-visual{isolation:isolate}
-.project-card .project-visual .blueprint-grid{z-index:0}
-.project-card .project-visual .playing-card{grid-area:1/1}
 .project-card .project-visual>i{z-index:2}
 
-/* On-page résumé, styled to match the portfolio rather than embedding a PDF viewer. */
+/* HTML résumé: same dark/green visual language as the rest of the portfolio. */
 .resume-document{margin-top:16px;padding:clamp(22px,4vw,46px);background:linear-gradient(145deg,#111611,#090b09);border:1px solid var(--line);position:relative;overflow:hidden}
 .resume-document:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--green)}
 .resume-doc-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding-bottom:24px;border-bottom:1px solid rgba(114,255,0,.35)}
 .resume-doc-header h3{font-size:clamp(27px,4vw,42px);letter-spacing:-.065em;margin:9px 0 3px}
 .resume-doc-header p{font-size:11px;color:#a0a99b;margin:0 0 4px}
 .resume-doc-header a{font:10px var(--mono);color:var(--green)}
-.resume-doc-mark{width:58px;height:58px;display:grid;place-items:center;border:1px solid var(--green);color:var(--green);font-weight:800;font-size:19px}
+.resume-doc-mark{width:58px;height:58px;flex:0 0 58px;display:grid;place-items:center;border:1px solid var(--green);color:var(--green);font-weight:800;font-size:19px}
 .resume-doc-grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(190px,.8fr);gap:38px;padding-top:25px}
-.resume-doc-grid section{margin-bottom:27px}
+.resume-doc-grid section{margin:0 0 27px}
 .resume-doc-grid h4{font:10px var(--mono);letter-spacing:.13em;color:var(--green);padding-bottom:9px;margin:0 0 13px;border-bottom:1px solid var(--line)}
 .resume-entry{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;margin:0 0 16px}
 .resume-entry strong,.resume-doc-side strong{font-size:12px;color:#f0f3ed}
@@ -55,6 +53,7 @@
 .resume-entry ul{margin:6px 0 0;padding-left:17px;color:#9aa394;font-size:10px;line-height:1.8}
 .resume-doc-side{padding-left:22px;border-left:1px solid var(--line)}
 .resume-doc-side p{margin-bottom:13px}
+.contact-form .h-captcha{max-width:100%;overflow:hidden;margin:8px 0 2px}
 .form-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
 .contact-form button:disabled{opacity:.55;cursor:wait}
 @media(max-width:680px){
@@ -62,16 +61,4 @@
   .resume-doc-side{padding:20px 0 0;border-left:0;border-top:1px solid var(--line)}
   .resume-entry{grid-template-columns:1fr;gap:3px}
   .resume-entry>span{text-align:left}
-}
-
-
-/* Web3Forms hCaptcha widget */
-.contact-form .h-captcha {
-  max-width: 100%;
-  overflow: hidden;
-  margin: 4px 0 2px;
-}
-.contact-form .form-submit:disabled {
-  opacity: .55;
-  cursor: wait;
 }
