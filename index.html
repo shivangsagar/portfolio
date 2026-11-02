@@ -77,7 +77,7 @@
       </div>
       <div class="project-panel-head"><div><span class="mini-label" id="projectEyebrow">DRAFTING / 2D DESIGN</span><h3 id="projectTitle">AutoCAD drawings</h3></div><span class="project-count" id="projectCount">07 DRAWINGS</span></div>
       <div class="project-grid" id="projectGrid" aria-live="polite"></div>
-      <p class="project-note"><span class="accent">NOTE /</span> Project folders are intentionally expandable. Add files and register them in <code>projects.js</code> to publish new work.</p>
+      <div class="project-show-all-wrap"><button class="small-action project-show-all" id="showAllProjects" type="button" hidden>Show all projects ↓</button></div>
     </section>
 
     <section class="section-wrap section-block" id="experience">
@@ -109,8 +109,19 @@
 
     <section class="section-wrap section-block resume-section" id="resume">
       <div class="section-heading"><div><span class="section-index">THE ONE-PAGE OVERVIEW</span><h2>Résumé<span class="accent">.</span></h2></div><p class="section-aside">A concise overview of my education, experience, skills and credentials.</p></div>
-      <div class="resume-panel"><div class="resume-info"><div class="resume-icon">PDF</div><div><span class="mini-label">UPDATED DOCUMENT</span><h3>Shivang-Sagar-Resume.pdf</h3><p>Education · Internships · Workshops · Skills</p></div></div><div class="resume-actions"><a class="button button-primary" href="assets/Shivang-Sagar-Resume.pdf" target="_blank" rel="noreferrer">Preview résumé ↗</a><a class="button button-ghost" href="assets/Shivang-Sagar-Resume.pdf" download>Download PDF ↓</a></div></div>
-      <div class="resume-preview"><iframe src="assets/Shivang-Sagar-Resume.pdf#toolbar=0&navpanes=0" title="Resume PDF preview"></iframe></div>
+      <div class="resume-panel"><div class="resume-info"><div class="resume-icon">CV</div><div><span class="mini-label">PROFILE / CURRICULUM VITAE</span><h3>Shivang Sagar</h3><p>Civil Engineering · Education · Experience · Skills</p></div></div><div class="resume-actions"><a class="button button-primary" href="assets/Shivang-Sagar-Resume.pdf" download>Download PDF ↓</a></div></div>
+      <article class="resume-document" aria-label="Résumé">
+        <header class="resume-doc-header"><div><span class="mini-label">CIVIL ENGINEERING / PORTFOLIO</span><h3>SHIVANG SAGAR</h3><p>Patna, Bihar · +91 9771271250 · shivangsagar2004@gmail.com</p><a href="https://www.linkedin.com/in/shivangsagar/" target="_blank" rel="noreferrer">LinkedIn ↗</a></div><span class="resume-doc-mark">SS</span></header>
+        <div class="resume-doc-grid">
+          <div class="resume-doc-main">
+            <section><h4>EDUCATION</h4><div class="resume-entry"><div><strong>Motihari College of Engineering</strong><p>Bachelor of Technology · Motihari, Bihar</p></div><span>2023 — Present<br>7.53 / 10.0</span></div><div class="resume-entry"><div><strong>Doon Global School</strong><p>Intermediate · CBSE · Patna, Bihar</p></div><span>2020 — 2022<br>76.8%</span></div><div class="resume-entry"><div><strong>Don Bosco Academy</strong><p>Matriculation · ICSE · Patna, Bihar</p></div><span>2019 — 2020<br>93.4%</span></div></section>
+            <section><h4>INTERNSHIPS</h4><div class="resume-entry"><div><strong>InternEra</strong><p>Structural Design with STAAD</p><ul><li>Optimized beam and column sizing using finite element analysis results.</li><li>Checked structural designs for safety and load-carrying requirements.</li></ul></div><span>Mar — May 2026</span></div><div class="resume-entry"><div><strong>RCPL · ICT Academy, IIT Kanpur</strong><p>Revit Architecture</p><ul><li>Modelled 3D architectural components, residential floor plans, elevations and interior layouts.</li></ul></div><span>Jun — Jul 2025</span></div></section>
+            <section><h4>WORKSHOPS</h4><div class="resume-entry"><div><strong>Campus Placement Preparation</strong><p>Training & Placement Cell, MCE</p><ul><li>Training in aptitude, technical problem-solving and professional communication.</li></ul></div><span>Jul 2026</span></div><div class="resume-entry"><div><strong>Total Station Workshop & Layout Preparation</strong><p>Centre of Excellence BIM & GIS, MCE</p><ul><li>Surveying, angle measurements, data collection and temporary benchmarks for building layout.</li></ul></div><span>Feb 2026</span></div></section>
+            <section><h4>CERTIFICATIONS & ACHIEVEMENTS</h4><div class="resume-entry"><div><strong>NPTEL — Human Behaviour</strong><p>Silver Certification · Top 5%</p></div><span>Feb — Apr 2026</span></div><div class="resume-entry"><div><strong>NPTEL — Soft Skill Development</strong><p>Silver Certification · Top 2%</p></div><span>Jan — Mar 2025</span></div></section>
+          </div>
+          <aside class="resume-doc-side"><section><h4>LEADERSHIP & ACTIVITIES</h4><p><strong>T&P Cell</strong><br>Student Representative · Jul 2026 — Present</p><p><strong>NSS</strong><br>Volunteer · Oct 2023 — Jan 2024</p></section><section><h4>TECHNICAL SKILLS</h4><p><strong>Software</strong><br>AutoCAD, Revit, STAAD.Pro, MS Office, Canva</p><p><strong>Programming</strong><br>Java, C</p></section><section><h4>LANGUAGES</h4><p>English — Professional Working Proficiency</p><p>Hindi — Native Proficiency</p></section></aside>
+        </div>
+      </article>
     </section>
 
     <section class="section-wrap section-block contact-section" id="contact">
@@ -120,10 +131,10 @@
         <form class="contact-form" id="contactForm">
           <div class="form-top"><span class="mini-label">SEND A MESSAGE</span><span class="form-status" id="formStatus">I'LL GET BACK TO YOU</span></div>
           <label>Your name<input name="name" type="text" placeholder="Name" required></label>
-          <label>Your email<input name="email" type="email" placeholder="you@example.com" required></label>
+          <label>Your email<input name="email" type="email" placeholder="you@example.com" autocomplete="email" maxlength="254" required></label>
           <label>What's on your mind?<textarea name="message" rows="4" placeholder="Write your message..." required></textarea></label>
           <button class="button button-primary form-submit" type="submit">Send message <span>↗</span></button>
-          <p class="form-hint">The form opens your email app by default. To enable direct website submission, add your Formspree endpoint in <code>config.js</code>.</p>
+          <input class="form-honeypot" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
         </form>
       </div>
     </section>

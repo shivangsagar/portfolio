@@ -37,45 +37,93 @@ function cadViewerUrl(filePath) {
 function escapeHTML(value = "") {
   return String(value).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
+let showAllProjects = false;
+
+function playingCard(number) {
+  // Project 01 starts at 2♣. Each new project advances one card through a 52-card deck.
+  const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+  const suits = [
+    { symbol: "♣", name: "clubs" },
+    { symbol: "♦", name: "diamonds" },
+    { symbol: "♠", name: "spades" },
+    { symbol: "♥", name: "hearts" }
+  ];
+  const projectNumber = Math.max(1, Number.parseInt(number, 10) || 1);
+  const deckIndex = (projectNumber - 1) % 52;
+  const rank = ranks[deckIndex % 13];
+  const suit = suits[Math.floor(deckIndex / 13)];
+  return `<div class="playing-card suit-${suit.name}" aria-label="${rank} of ${suit.name}">
+    <span class="card-corner card-top">${rank}<b>${suit.symbol}</b></span>
+    <span class="card-center">${suit.symbol}</span>
+    <span class="card-corner card-bottom">${rank}<b>${suit.symbol}</b></span>
+  </div>`;
+}
+
 function renderProjects(category) {
   const grid = $("#projectGrid");
-  const data = window.PROJECTS?.[category] || [];
+  const data = [...(window.PROJECTS?.[category] || [])];
   const meta = {
     autocad: ["DRAFTING / 2D DESIGN", "AutoCAD drawings"],
     github: ["SOFTWARE / OPEN SOURCE", "GitHub projects"],
     revit: ["BIM / ARCHITECTURAL MODELLING", "Revit projects"],
     staad: ["STRUCTURAL ANALYSIS / DESIGN", "STAAD.Pro projects"]
   };
+
+  // Native project numbers are chronological: newest project first.
+  if (category !== "github") {
+    data.sort((a, b) => Number.parseInt(b.number || "0", 10) - Number.parseInt(a.number || "0", 10));
+  }
+
   $("#projectEyebrow").textContent = meta[category][0];
   $("#projectTitle").textContent = meta[category][1];
   $("#projectCount").textContent = `${String(data.length).padStart(2, "0")} ${category === "github" ? "REPOSITORIES" : "PROJECTS"}`;
 
+  const showAllButton = $("#showAllProjects");
+  showAllProjects = false;
+  const visibleData = data.slice(0, 3);
+  showAllButton.hidden = data.length <= 3;
+  showAllButton.textContent = `Show all ${data.length} projects ↓`;
+
   if (!data.length) {
-    grid.innerHTML = `<div class="empty-project"><span class="empty-symbol">＋</span><div class="mini-label">WORK IN PROGRESS</div><h3>New ${category === "staad" ? "STAAD.Pro" : "Revit"} work will appear here.</h3><p>This category is ready. Add your project files and an entry in <code>projects.js</code> whenever you have work to share.</p></div>`;
+    const label = category === "revit" ? "Revit" : "STAAD.Pro";
+    grid.innerHTML = `<div class="empty-project"><span class="empty-symbol">＋</span><div class="mini-label">NO PROJECTS PUBLISHED</div><h3>${label} projects will appear here.</h3></div>`;
     return;
   }
 
-  if (category === "github") {
-    grid.innerHTML = data.map((item, i) => `
-      <article class="project-card github-card">
-        <div class="project-card-top"><span class="project-number">GH / 0${i + 1}</span><span class="file-pill">${escapeHTML(item.type)}</span></div>
-        <div class="project-visual github-visual"><span>{ }</span><i>OPEN SOURCE / PERSONAL PROJECT</i></div>
-        <div class="project-card-body"><h4>${escapeHTML(item.title)}</h4><p>${escapeHTML(item.description)}</p><div class="tag-list">${(item.tags || []).map(tag => `<span>${escapeHTML(tag)}</span>`).join("")}</div><a class="project-link" href="${escapeHTML(item.url)}" target="_blank" rel="noreferrer">View repository <span>↗</span></a></div>
+  const renderCards = (items) => {
+    if (category === "github") {
+      return items.map((item, i) => `
+        <article class="project-card github-card">
+          <div class="project-card-top"><span class="project-number">GH / 0${i + 1}</span><span class="file-pill">${escapeHTML(item.type)}</span></div>
+          <div class="project-visual github-visual"><span>{ }</span><i>OPEN SOURCE / PERSONAL PROJECT</i></div>
+          <div class="project-card-body"><h4>${escapeHTML(item.title)}</h4><p>${escapeHTML(item.description)}</p><div class="tag-list">${(item.tags || []).map(tag => `<span>${escapeHTML(tag)}</span>`).join("")}</div><a class="project-link" href="${escapeHTML(item.url)}" target="_blank" rel="noreferrer">View repository <span>↗</span></a></div>
+        </article>`).join("");
+    }
+
+    return items.map((item, i) => `
+      <article class="project-card">
+        <div class="project-card-top"><span class="project-number">${escapeHTML(item.number || String(i + 1).padStart(2, "0"))} / ${category.toUpperCase()}</span><span class="file-pill">${escapeHTML(item.type || "PROJECT")}</span></div>
+        <div class="project-visual cad-visual"><div class="blueprint-grid"></div>${playingCard(item.number || i + 1)}<i>TECHNICAL DRAWING / ${escapeHTML(item.type || "FILE")}</i></div>
+        <div class="project-card-body"><h4>${escapeHTML(item.title)}</h4><p>${escapeHTML(item.description || "Project details will be added soon.")}</p>
+        <div class="project-card-actions">
+          ${item.viewer && item.file ? `<button class="small-action preview-cad" data-file="${escapeHTML(item.file)}" data-title="${escapeHTML(item.title)}">Preview drawing ↗</button>` : ""}
+          ${item.file ? `<a class="small-action secondary" href="${escapeHTML(item.file)}" download>Download ${escapeHTML(item.type || "file")} ↓</a>` : ""}
+          ${item.preview ? `<a class="small-action secondary" href="${escapeHTML(item.preview)}" target="_blank" rel="noreferrer">View sheets ↗</a>` : ""}
+        </div></div>
       </article>`).join("");
-    return;
-  }
+  };
 
-  grid.innerHTML = data.map((item, i) => `
-    <article class="project-card">
-      <div class="project-card-top"><span class="project-number">${escapeHTML(item.number || String(i + 1).padStart(2, "0"))} / ${category.toUpperCase()}</span><span class="file-pill">${escapeHTML(item.type || "PROJECT")}</span></div>
-      <div class="project-visual cad-visual"><div class="blueprint-grid"></div><div class="blueprint-shape shape-${i % 4}"><span>${escapeHTML(item.number || "＋")}</span></div><i>TECHNICAL DRAWING / ${escapeHTML(item.type || "FILE")}</i></div>
-      <div class="project-card-body"><h4>${escapeHTML(item.title)}</h4><p>${escapeHTML(item.description || "Project details will be added soon.")}</p>
-      <div class="project-card-actions">
-        ${item.viewer && item.file ? `<button class="small-action preview-cad" data-file="${escapeHTML(item.file)}" data-title="${escapeHTML(item.title)}">Preview drawing ↗</button>` : ""}
-        ${item.file ? `<a class="small-action secondary" href="${escapeHTML(item.file)}" download>Download ${escapeHTML(item.type || "file")} ↓</a>` : ""}
-        ${item.preview ? `<a class="small-action secondary" href="${escapeHTML(item.preview)}" target="_blank" rel="noreferrer">View sheets ↗</a>` : ""}
-      </div></div>
-    </article>`).join("");
+  grid.innerHTML = renderCards(visibleData);
+  showAllButton.onclick = () => {
+    showAllProjects = !showAllProjects;
+    grid.innerHTML = renderCards(showAllProjects ? data : data.slice(0, 3));
+    showAllButton.textContent = showAllProjects ? "Show less ↑" : `Show all ${data.length} projects ↓`;
+    bindCadPreviewButtons(grid);
+  };
+  bindCadPreviewButtons(grid);
+}
+
+function bindCadPreviewButtons(grid) {
   $$(".preview-cad", grid).forEach(button => button.addEventListener("click", () => openCad(button.dataset.file, button.dataset.title)));
 }
 function openCad(file, title) {
@@ -110,33 +158,89 @@ $$(".project-tab").forEach(tab => tab.addEventListener("click", () => {
 }));
 renderProjects("autocad");
 
-// Contact form: Formspree endpoint if configured; otherwise open a prefilled email.
-$("#contactForm").addEventListener("submit", async event => {
+// Contact form: Web3Forms handles delivery; the recipient address is not in this source.
+const contactForm = $("#contactForm");
+const emailInput = contactForm.querySelector('input[name="email"]');
+const accessKeyInput = contactForm.querySelector('input[name="access_key"]');
+if (accessKeyInput && window.PORTFOLIO_CONFIG?.web3formsAccessKey) {
+  accessKeyInput.value = window.PORTFOLIO_CONFIG.web3formsAccessKey;
+}
+
+function validVisitorEmail(value) {
+  const email = String(value || "").trim();
+  if (email.length > 254 || /\s/.test(email) || email.includes("+")) return false;
+  const parts = email.split("@");
+  if (parts.length !== 2) return false;
+  const [local, domain] = parts;
+  if (!local || local.length > 64 || local.startsWith(".") || local.endsWith(".") || local.includes("..")) return false;
+  if (!/^[A-Za-z0-9.!#$%&'*\/=?^_`{|}~-]+$/.test(local)) return false;
+  if (!domain || domain.length > 253 || !domain.includes(".")) return false;
+  const labels = domain.toLowerCase().split(".");
+  if (labels.some(label => !label || label.length > 63 || label.startsWith("-") || label.endsWith("-") || !/^[a-z0-9-]+$/.test(label))) return false;
+  const tld = labels[labels.length - 1];
+  if (!/^[a-z]{2,}$/i.test(tld)) return false;
+  const suspiciousLocal = /^(test|testing|fake|spam|asdf|qwerty|no.?reply|example)([0-9._-]*|)$/i;
+  if (suspiciousLocal.test(local)) return false;
+  const disposableDomains = new Set(["mailinator.com", "10minutemail.com", "guerrillamail.com", "tempmail.com", "yopmail.com", "throwawaymail.com"]);
+  if (disposableDomains.has(domain.toLowerCase())) return false;
+  return true;
+}
+
+emailInput.addEventListener("input", () => {
+  emailInput.setCustomValidity(emailInput.value && !validVisitorEmail(emailInput.value)
+    ? "Enter a valid email address. Plus-addressing and temporary email services are not accepted."
+    : "");
+});
+
+contactForm.addEventListener("submit", async event => {
   event.preventDefault();
-  const form = event.currentTarget;
-  const data = new FormData(form);
-  const payload = Object.fromEntries(data.entries());
   const status = $("#formStatus");
-  const endpoint = window.PORTFOLIO_CONFIG?.formspreeEndpoint || "";
-  if (endpoint.trim()) {
-    status.textContent = "SENDING...";
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        body: data,
-        headers: { "Accept": "application/json" }
-      });
-      if (!response.ok) throw new Error("Submission failed");
-      status.textContent = "MESSAGE SENT ✓";
-      form.reset();
-    } catch {
-      status.textContent = "COULDN'T SEND — USE EMAIL LINK";
-    }
-  } else {
-    const subject = encodeURIComponent(`Portfolio enquiry from ${payload.name}`);
-    const body = encodeURIComponent(`Name: ${payload.name}\nEmail: ${payload.email}\n\n${payload.message}`);
-    window.location.href = `mailto:${window.PORTFOLIO_CONFIG.email}?subject=${subject}&body=${body}`;
-    status.textContent = "OPENING YOUR EMAIL APP...";
+  const submitButton = contactForm.querySelector('button[type="submit"]');
+  const data = new FormData(contactForm);
+  if (data.get("botcheck")) return;
+
+  if (!validVisitorEmail(emailInput.value)) {
+    emailInput.setCustomValidity("Enter a valid email address. Plus-addressing and temporary email services are not accepted.");
+    emailInput.reportValidity();
+    return;
+  }
+  emailInput.setCustomValidity("");
+
+  // Web3Forms injects this response field when its hCaptcha widget is loaded.
+  const captchaResponse = contactForm.querySelector('textarea[name="h-captcha-response"]')?.value;
+  if (!captchaResponse) {
+    status.textContent = "PLEASE COMPLETE THE CAPTCHA";
+    contactForm.querySelector(".h-captcha")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  const accessKey = window.PORTFOLIO_CONFIG?.web3formsAccessKey || accessKeyInput?.value;
+  if (!accessKey) {
+    status.textContent = "FORM NOT CONFIGURED";
+    return;
+  }
+  data.set("access_key", accessKey);
+  data.set("subject", `Portfolio enquiry — ${String(data.get("name") || "Visitor").trim()}`);
+  data.set("from_name", "Portfolio Contact Form");
+  data.set("replyto", String(data.get("email") || "").trim());
+
+  status.textContent = "SENDING...";
+  submitButton.disabled = true;
+  try {
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      body: data,
+      headers: { "Accept": "application/json" }
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) throw new Error(result.message || "Submission failed");
+    status.textContent = "MESSAGE SENT ✓";
+    contactForm.reset();
+    emailInput.setCustomValidity("");
+  } catch (error) {
+    status.textContent = "COULDN'T SEND — TRY AGAIN";
+  } finally {
+    submitButton.disabled = false;
   }
 });
 
