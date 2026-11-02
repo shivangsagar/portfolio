@@ -62,3 +62,39 @@
   .resume-entry{grid-template-columns:1fr;gap:3px}
   .resume-entry>span{text-align:left}
 }
+
+
+/* Requested refinements: original single-column résumé layout and portfolio-themed playing cards. */
+.resume-document-original { padding: clamp(22px, 3.6vw, 46px); background: linear-gradient(145deg, #101410, #080a08); }
+.resume-original-header { text-align: center; padding: 2px 0 23px; margin-bottom: 22px; border-bottom: 1px solid rgba(128,128,128,.55); }
+.resume-original-header h3 { margin: 0 0 5px; color: #fff; font-family: Georgia, "Times New Roman", serif; font-size: clamp(23px, 3vw, 30px); font-weight: 700; letter-spacing: .015em; }
+.resume-original-header p { margin: 0; color: #c5cbbf; font-family: Georgia, "Times New Roman", serif; font-size: clamp(10px, 1.15vw, 14px); line-height: 1.7; }
+.resume-original-header p span { color: #808080; padding: 0 3px; }
+.resume-original-header a { color: var(--green); text-decoration: underline; text-underline-offset: 2px; }
+.resume-original-section { margin: 0 0 23px; }
+.resume-original-section h4 { margin: 0 0 10px; padding: 0 0 6px; border-bottom: 1px solid rgba(128,128,128,.55); color: var(--green); font: 600 10px/1.5 var(--mono); letter-spacing: .12em; }
+.resume-original-entry { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 16px; align-items: start; margin: 0 0 11px; color: #e8ece5; font: 13px/1.55 Georgia, "Times New Roman", serif; }
+.resume-original-entry strong { color: #fff; font-weight: 700; }
+.resume-original-entry em { color: #c6cec0; }
+.resume-original-entry > span { color: #d0d7c9; text-align: right; white-space: nowrap; font: 12px/1.55 Georgia, "Times New Roman", serif; }
+.resume-original-entry ul { margin: 3px 0 0; padding-left: 28px; color: #d8ded3; font: 13px/1.48 Georgia, "Times New Roman", serif; }
+.resume-original-section > p { margin: 5px 0; color: #d8ded3; font: 13px/1.55 Georgia, "Times New Roman", serif; }
+.resume-original-section > p strong { color: #fff; }
+.playing-card {
+  background: radial-gradient(ellipse at 50% 45%, rgba(114,255,0,.10), transparent 62%), linear-gradient(145deg, #151b14, #080b08 78%);
+  border: 1px solid rgba(114,255,0,.9); color: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.48), inset 0 0 18px rgba(114,255,0,.045);
+}
+.card-corner { color: #fff; }
+.card-corner b { color: var(--green); }
+.card-center { color: var(--green); text-shadow: 0 0 15px rgba(114,255,0,.22); }
+.suit-diamonds .card-center { color: #fff; }
+.suit-spades .card-center { color: #aeb5aa; }
+.suit-hearts .card-center { color: var(--green); }
+.project-card:hover .playing-card { box-shadow: 0 12px 30px rgba(114,255,0,.16), inset 0 0 22px rgba(114,255,0,.08); }
+@media(max-width:680px) {
+  .resume-original-entry { grid-template-columns: 1fr; gap: 2px; }
+  .resume-original-entry > span { text-align: left; }
+  .resume-original-entry ul { padding-left: 20px; }
+  .resume-original-header p { line-height: 1.9; }
+}
