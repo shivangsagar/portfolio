@@ -169,24 +169,23 @@
   <footer class="footer"><div class="footer-top"><a class="brand" href="#home"><span class="brand-mark">SS</span><span>SHIVANG SAGAR<span class="brand-sub">CIVIL ENGINEERING / PORTFOLIO</span></span></a><a href="#home" class="back-top">BACK TO TOP ↑</a></div><div class="footer-quote">“The best way to predict the future is to <span>build it.</span>”</div>
     <div class="footer-views" aria-label="Portfolio views">
   <span class="footer-views-label">PORTFOLIO VIEWS</span>
-  <div
-    class="counterapi footer-views-count"
-    key="portfolio"
-    action="view"
-    startNumber="3"
-    noIcon="true"
-    noCss="true"
-    noLink="true"
-    noFormatting="true"
-    color="#72ff00"
-    bg="transparent">
-  </div>
+  <span id="portfolioViewsCount" class="footer-views-count" aria-live="polite"></span>
 </div>
   <div class="footer-bottom"><span>© <span id="year"></span> SHIVANG SAGAR</span><span>DESIGNED TO KEEP EVOLVING.</span><span>BUILT WITH INTENTION / INDIA</span></div></footer>
   <script src="config.js"></script>
   <script src="projects.js"></script>
   <script src="https://web3forms.com/client/script.js" async defer></script>
   <script src="script.js"></script>
-  <script async src="https://counterapi.com/c.js?ns=shivangsagar.github.io"></script>
+  <script>
+  function showPortfolioViews(response) {
+    const counter = document.getElementById("portfolioViewsCount");
+
+    if (counter && response && typeof response.value !== "undefined") {
+      counter.textContent = response.value;
+    }
+  }
+</script>
+
+<script async src="https://counterapi.com/api/shivangsagar.github.io/view/portfolio?callback=showPortfolioViews&amp;startNumber=3"></script>
 </body>
 </html>
